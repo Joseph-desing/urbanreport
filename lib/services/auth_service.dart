@@ -102,9 +102,26 @@ class AuthService {
   // Recuperar contraseña
   Future<void> resetPassword({required String email}) async {
     try {
-      await _supabase.auth.resetPasswordForEmail(email);
+      // Obtener la URL actual para el redirect
+      String redirectUrl;
+      if (kIsWeb) {
+        // Para Flutter Web, usar la URL actual del navegador
+        redirectUrl = Uri.base.origin;
+      } else {
+        // Para apps móviles, usar deep link (ajustar según tu configuración)
+        redirectUrl = 'urbanreport://reset-password';
+      }
+
+      await _supabase.auth.resetPasswordForEmail(
+        email,
+        redirectTo: redirectUrl,
+      );
+    } on AuthApiException {
+      // Re-lanzar la excepción de Supabase sin modificarla
+      rethrow;
     } catch (e) {
-      throw Exception('Error al recuperar contraseña: $e');
+      // Para otros errores, lanzar como están
+      rethrow;
     }
   }
 

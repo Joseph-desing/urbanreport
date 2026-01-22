@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,6 +11,7 @@ import 'package:urbanreport/screens/create_report_screen.dart';
 import 'package:urbanreport/screens/home_screen.dart';
 import 'package:urbanreport/screens/login_screen.dart';
 import 'package:urbanreport/screens/report_detail_screen.dart';
+import 'package:urbanreport/screens/reset_password_screen.dart';
 import 'package:urbanreport/screens/signup_screen.dart';
 
 void main() async {
@@ -56,6 +59,101 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isLoginMode = true;
   Report? _selectedReport;
   String _currentScreen = 'auth';
+  String? _authErrorMessage;
+  StreamSubscription<AuthState>? _authSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _handleAuthErrorFromRedirect();
+    _handleRecoveryRedirect();
+
+    _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.passwordRecovery) {
+        setState(() {
+          _currentScreen = 'resetPassword';
+          _selectedReport = null;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
+  }
+
+  void _handleAuthErrorFromRedirect() {
+    final uri = Uri.base;
+    final error = uri.queryParameters['error'];
+    if (error == null) return;
+
+    _authErrorMessage = uri.queryParameters['error_description'] ??
+        'El enlace de correo es inválido o ha expirado. Solicita uno nuevo.';
+
+    Future.microtask(() async {
+      if (!mounted) return;
+      await context.read<AuthProvider>().signout();
+      if (!mounted) return;
+      setState(() {
+        _isLoginMode = true;
+        _currentScreen = 'auth';
+        _selectedReport = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_authErrorMessage!),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    });
+  }
+
+  Future<void> _handleRecoveryRedirect() async {
+    final uri = Uri.base;
+    final query = uri.queryParameters;
+    Map<String, String> fragment = {};
+    if (uri.fragment.isNotEmpty) {
+      try {
+        fragment = Uri.splitQueryString(uri.fragment);
+      } catch (_) {
+        fragment = {};
+      }
+    }
+
+    final code = query['code'] ?? fragment['code'];
+    final refreshToken = query['refresh_token'] ?? fragment['refresh_token'];
+    final accessToken = query['access_token'] ?? fragment['access_token'];
+    final isRecovery = query['type'] == 'recovery' || fragment['type'] == 'recovery';
+
+    if (code == null && refreshToken == null && accessToken == null) return;
+
+    try {
+      // Preferimos refresh_token porque viene en el fragmento del link de Supabase
+      if (refreshToken != null) {
+        await Supabase.instance.client.auth.setSession(refreshToken);
+      } else if (code != null) {
+        await Supabase.instance.client.auth.exchangeCodeForSession(code);
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _currentScreen = 'resetPassword';
+        _selectedReport = null;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo abrir el enlace de recuperación. Solicita uno nuevo.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 5),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +196,18 @@ class _MyHomePageState extends State<MyHomePage> {
           return CreateReportScreen(
             onReportCreated: () {
               setState(() => _currentScreen = 'home');
+            },
+          );
+        }
+
+        if (_currentScreen == 'resetPassword') {
+          return ResetPasswordScreen(
+            onResetComplete: () {
+              setState(() {
+                _isLoginMode = true;
+                _currentScreen = 'auth';
+                _selectedReport = null;
+              });
             },
           );
         }

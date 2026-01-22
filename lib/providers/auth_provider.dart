@@ -49,7 +49,11 @@ class AuthProvider extends ChangeNotifier {
         password: password,
         fullName: fullName,
       );
-      _isAuthenticated = true;
+      // No asumir sesión activa si Supabase requiere confirmar el correo
+      _isAuthenticated = _authService.isAuthenticated();
+      if (!_isAuthenticated) {
+        _currentUser = null;
+      }
     } catch (e) {
       rethrow;
     } finally {
@@ -71,7 +75,7 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
       );
-      _isAuthenticated = true;
+      _isAuthenticated = _authService.isAuthenticated();
     } catch (e) {
       rethrow;
     } finally {

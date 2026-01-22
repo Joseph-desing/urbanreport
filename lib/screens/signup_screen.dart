@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:urbanreport/services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -57,13 +58,33 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       widget.onSignupSuccess();
+    } on AuthApiException catch (e) {
+      if (!mounted) return;
+
+      String errorMessage = 'Error al registrar usuario';
+      
+      // Manejar error de rate limit específicamente
+      if (e.statusCode == '429' || e.code == 'over_email_send_rate_limit') {
+        errorMessage = 'Se ha alcanzado el límite de registros por hora. Por favor espera unos minutos e intenta de nuevo.';
+      } else if (e.message.isNotEmpty) {
+        errorMessage = 'Error: ${e.message}';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text('Error al registrar: ${e.toString()}'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
         ),
       );
     } finally {

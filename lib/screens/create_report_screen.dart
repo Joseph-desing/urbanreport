@@ -111,11 +111,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     }
   }
 
-  // Seleccionar imagen
-  Future<void> _pickImage() async {
+  // Seleccionar imagen desde cámara o galería
+  Future<void> _pickImage(ImageSource source) async {
     try {
-      final ImageSource source = kIsWeb ? ImageSource.gallery : ImageSource.camera;
-      
       final pickedFile = await _imagePicker.pickImage(
         source: source,
         maxWidth: 1024,
@@ -132,6 +130,43 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         );
       }
     }
+  }
+
+  Future<void> _showImageSourceSelector() async {
+    if (kIsWeb) {
+      // En web solo se permite galería
+      await _pickImage(ImageSource.gallery);
+      return;
+    }
+
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Tomar foto'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Elegir de la galería'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   // Crear reporte
@@ -456,9 +491,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                           ),
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
-                          onPressed: _pickImage,
-                          icon: const Icon(Icons.camera_alt),
-                          label: Text(kIsWeb ? 'Cargar foto' : 'Tomar foto'),
+                          onPressed: _showImageSourceSelector,
+                          icon: const Icon(Icons.add_a_photo),
+                          label: Text(kIsWeb ? 'Cargar foto' : 'Agregar foto'),
                         ),
                       ],
                     ),

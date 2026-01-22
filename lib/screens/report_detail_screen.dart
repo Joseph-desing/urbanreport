@@ -85,13 +85,14 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
             );
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Reporte eliminado'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pop(context);
+          // Notificar a la lista y volver atrás
+          widget.onReportUpdated();
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop(true);
+          } else {
+            // Fallback: cerrar pantalla si no hay stack
+            Navigator.of(context).maybePop(true);
+          }
         }
       } catch (e) {
         if (mounted) {

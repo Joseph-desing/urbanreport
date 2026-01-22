@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:urbanreport/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -80,13 +81,33 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.green,
         ),
       );
+    } on AuthApiException catch (e) {
+      if (!mounted) return;
+
+      String errorMessage = 'Error al recuperar contraseña';
+      
+      // Manejar error de rate limit específicamente
+      if (e.statusCode == '429' || e.code == 'over_email_send_rate_limit') {
+        errorMessage = 'Has solicitado recuperar tu contraseña muchas veces. Por favor espera unos minutos e intenta de nuevo.';
+      } else if (e.message.isNotEmpty) {
+        errorMessage = 'Error: ${e.message}';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: ${e.toString()}'),
+          content: Text('Error al recuperar contraseña: ${e.toString()}'),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
         ),
       );
     }
