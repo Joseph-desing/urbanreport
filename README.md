@@ -2,15 +2,7 @@
 
 Una aplicación móvil Flutter que permite a los ciudadanos reportar problemas urbanos en su comunidad. Permite reportar baches, luminarias dañadas, acumulación de basura, alcantarillas obstruidas y otros problemas mediante fotografías y ubicación geográfica.
 
-## Características
 
-- **Autenticación de usuarios** con verificación por correo electrónico
-- **Operaciones CRUD** en reportes almacenados en la nube
-- **Almacenamiento de imágenes** en Supabase Storage
-- **Integración de mapas interactivos** con OpenStreetMap
-- **Geolocalización automática** de problemas reportados
-- **Gestión de estado** con Provider
-- **Categorización de reportes**: Baches, Luminarias, Basura, Alcantarillas, Otro
 
 ## Requisitos Previos
 
@@ -84,29 +76,9 @@ CREATE INDEX reports_created_at ON reports(created_at DESC);
 CREATE INDEX reports_estado ON reports(estado);
 ```
 
-### 5. Configurar Storage en Supabase
 
-1. En Supabase, ve a Storage
-2. Crea un bucket llamado `report-images`
-3. Configura las políticas de acceso según sea necesario
 
-### 6. Ejecutar la aplicación
-
-```bash
-flutter run
-```
-
-Para ejecutar en plataforma específica:
-
-```bash
-flutter run -d android   # Android
-flutter run -d ios       # iOS
-flutter run -d web       # Web
-flutter run -d windows   # Windows
-flutter run -d linux     # Linux
-```
-
-## Estructura del Proyecto
+### 6. Estructura del Proyecto
 
 ```
 lib/
@@ -161,35 +133,6 @@ Agrega en `android/app/src/main/AndroidManifest.xml`:
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
 
-### iOS
-Agrega en `ios/Runner/Info.plist`:
-```xml
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>Esta aplicación necesita acceso a tu ubicación para reportar problemas urbanos.</string>
-<key>NSCameraUsageDescription</key>
-<string>Esta aplicación necesita acceso a la cámara para capturar fotos de los problemas.</string>
-<key>NSPhotoLibraryUsageDescription</key>
-<string>Esta aplicación necesita acceso a tu galería de fotos.</string>
-```
 
-## Contribución
 
-Para contribuir al proyecto:
 
-1. Fork el repositorio
-2. Crea una rama con tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## Licencia
-
-Este proyecto está bajo la licencia MIT. Ver `LICENSE` para más detalles.
-
-## Soporte
-
-Para reportar bugs o solicitar features, abre un issue en el repositorio.
-
-## Autor
-
-Desarrollado como proyecto educativo para evaluar competencias en desarrollo de aplicaciones móviles con Flutter.
