@@ -75,25 +75,25 @@ CREATE TABLE reports (
 ```
 lib/
 ├── config/
-│   └── supabase_config.dart       # Configuración de Supabase
+│   └── supabase_config.dart       
 ├── models/
-│   ├── user.dart                  # Modelo de usuario
-│   └── report.dart                # Modelo de reporte
+│   ├── user.dart                  
+│   └── report.dart                
 ├── services/
-│   ├── auth_service.dart          # Servicio de autenticación
-│   └── report_service.dart        # Servicio de reportes
+│   ├── auth_service.dart          
+│   └── report_service.dart        
 ├── providers/
-│   ├── auth_provider.dart         # Provider de autenticación
-│   └── report_provider.dart       # Provider de reportes
+│   ├── auth_provider.dart         
+│   └── report_provider.dart       
 ├── screens/
-│   ├── login_screen.dart          # Pantalla de inicio de sesión
-│   ├── signup_screen.dart         # Pantalla de registro
-│   ├── home_screen.dart           # Pantalla principal con mapa
-│   ├── create_report_screen.dart  # Pantalla de creación de reportes
-│   └── report_detail_screen.dart  # Pantalla de detalles del reporte
-├── widgets/                        # Componentes reutilizables
-├── utils/                          # Utilidades y helpers
-└── main.dart                       # Punto de entrada
+│   ├── login_screen.dart          
+│   ├── signup_screen.dart         
+│   ├── home_screen.dart           
+│   ├── create_report_screen.dart  
+│   └── report_detail_screen.dart  
+├── widgets/                        
+├── utils/                          
+└── main.dart                       
 ```
 
 ## Flujo de la Aplicación
