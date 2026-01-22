@@ -21,15 +21,19 @@ class ReportService {
     try {
       String? fotoUrl;
 
-      // Subir imagen si existe (no en web)
-      if (imageFile != null && !kIsWeb) {
+      // Subir imagen si existe
+      if (imageFile != null) {
+        debugPrint('DEBUG: Se detectó archivo de imagen');
         try {
           fotoUrl = await _uploadImage(imageFile, usuarioId);
-          debugPrint('✓ Imagen subida: $fotoUrl');
+          debugPrint('✓ Imagen subida exitosamente: $fotoUrl');
         } catch (e) {
-          debugPrint('⚠ Advertencia al subir imagen: $e');
-          // Continuar sin imagen
+          debugPrint('✗ ERROR: Fallo al subir imagen: $e');
+          // NO continuar sin imagen - es importante que se suba
+          throw Exception('Error al subir la imagen. Intenta nuevamente.');
         }
+      } else {
+        debugPrint('⚠ AVISO: No se proporcionó archivo de imagen');
       }
 
       final reportData = {
@@ -43,6 +47,8 @@ class ReportService {
         'foto_url': fotoUrl,
         'created_at': DateTime.now().toIso8601String(),
       };
+
+      debugPrint('DEBUG: Creando reporte con datos: $reportData');
 
       final response = await _supabase
           .from(SupabaseConfig.reportsTable)
@@ -181,20 +187,36 @@ class ReportService {
   // Subir imagen a Supabase Storage
   Future<String> _uploadImage(File imageFile, String usuarioId) async {
     try {
+      // Verificar que el archivo existe
+      if (!await imageFile.exists()) {
+        throw Exception('El archivo de imagen no existe');
+      }
+
+      debugPrint('DEBUG: Iniciando carga de imagen desde: ${imageFile.path}');
+      debugPrint('DEBUG: Tamaño del archivo: ${await imageFile.length()} bytes');
+
       final fileName =
           '${usuarioId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = '$usuarioId/$fileName';
 
+      debugPrint('DEBUG: Ruta de almacenamiento: $filePath');
+
+      // Subir archivo
       await _supabase.storage
           .from(SupabaseConfig.reportImagesBucket)
           .upload(filePath, imageFile);
 
+      debugPrint('DEBUG: Archivo subido exitosamente');
+
+      // Obtener URL pública
       final publicUrl = _supabase.storage
           .from(SupabaseConfig.reportImagesBucket)
           .getPublicUrl(filePath);
 
+      debugPrint('DEBUG: URL pública generada: $publicUrl');
       return publicUrl;
     } catch (e) {
+      debugPrint('ERROR: Fallo al subir imagen: $e');
       throw Exception('Error al subir imagen: $e');
     }
   }

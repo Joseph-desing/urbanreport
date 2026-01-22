@@ -129,7 +129,7 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Foto del reporte
-            if (widget.report.fotoUrl != null)
+            if (widget.report.fotoUrl != null && widget.report.fotoUrl!.isNotEmpty)
               Container(
                 height: 300,
                 color: Colors.grey[200],
@@ -140,10 +140,16 @@ class _ReportDetailScreenState extends State<ReportDetailScreen> {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.image_not_supported, size: 50),
-                          SizedBox(height: 8),
-                          Text('Error al cargar la imagen'),
+                        children: [
+                          const Icon(Icons.image_not_supported, size: 50),
+                          const SizedBox(height: 8),
+                          const Text('Error al cargar la imagen'),
+                          const SizedBox(height: 8),
+                          Text(
+                            'URL: ${widget.report.fotoUrl}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 10),
+                          ),
                         ],
                       ),
                     );
