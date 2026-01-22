@@ -13,20 +13,15 @@ Una aplicación móvil Flutter que permite a los ciudadanos reportar problemas u
 
 ## Instalación
 
-### 1. Clonar el repositorio
+### 1. Clonamos el repositorio
 
-```bash
-git clone <tu-repo>
-cd urbanreport
-```
-
-### 2. Instalar dependencias
+### 2. Instalamos dependencias
 
 ```bash
 flutter pub get
 ```
 
-### 3. Configurar Supabase
+### 3. Configuramos Supabase
 
 1. Se crea un proyecto en [Supabase](https://supabase.com)
 2. En el proyecto, se actualiza el archivo `lib/config/supabase_config.dart`:
@@ -42,7 +37,7 @@ class SupabaseConfig {
 }
 ```
 
-### 4. Crear las tablas en Supabase
+### 4. Creamos las tablas en Supabase
 
 En el SQL Editor de Supabase, se ejecuta:
 
@@ -70,11 +65,7 @@ CREATE TABLE reports (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Crear índices para mejor rendimiento
-CREATE INDEX reports_usuario_id ON reports(usuario_id);
-CREATE INDEX reports_created_at ON reports(created_at DESC);
-CREATE INDEX reports_estado ON reports(estado);
-```
+
 
 
 
