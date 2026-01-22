@@ -28,8 +28,8 @@ flutter pub get
 
 ### 3. Configurar Supabase
 
-1. Crea un proyecto en [Supabase](https://supabase.com)
-2. En tu proyecto, actualiza el archivo `lib/config/supabase_config.dart`:
+1. Se crea un proyecto en [Supabase](https://supabase.com)
+2. En el proyecto, se actualiza el archivo `lib/config/supabase_config.dart`:
 
 ```dart
 class SupabaseConfig {
@@ -44,7 +44,7 @@ class SupabaseConfig {
 
 ### 4. Crear las tablas en Supabase
 
-En el SQL Editor de Supabase, ejecuta:
+En el SQL Editor de Supabase, se ejecuta:
 
 ```sql
 -- Tabla de usuarios
@@ -125,7 +125,7 @@ lib/
 ## Permisos Requeridos
 
 ### Android
-Agrega en `android/app/src/main/AndroidManifest.xml`:
+Se Agrega en `android/app/src/main/AndroidManifest.xml`:
 ```xml
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
